@@ -21,17 +21,15 @@ type Post = {
   id: number;
   title: string;
   content: string;
-  isPublished: boolean;
   author: Author
+  featured_image: string;
   authorId: number;
-  createdAt: string; // You might want to use a Date type here
-  updatedAt: string; // You might want to use a Date type here
+  createdAt: string;
+  updatedAt: string;
 };
 export default async function page(props: { params: { id: string } }) {
   const { id } = props.params
   const data = await getData(id)
-
-
 
   return (
     <div className="container prose px-32 mt-10 tiptap mx-auto text-center  w-full mx-auto">
@@ -50,8 +48,8 @@ export default async function page(props: { params: { id: string } }) {
 
           <Suspense fallback={<ImageSkeleton />} >
             <Image
-              src="https://images.unsplash.com/flagged/photo-1577912504896-abc46b500434?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              className=" mx-auto max-h-[30rem] border border-input shadow-xl dark:shadow-gray-500/10 rounded-md  my-5 h-full bg-cover w-full"
+              src={data?.featured_image!}
+              className=" mx-auto max-h-[30rem] h-full border border-input shadow-xl dark:shadow-gray-500/10 rounded-md  my-5 h-full bg-cover w-full"
               width={500}
               height={500}
               alt="Picture of the author"

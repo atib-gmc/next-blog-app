@@ -1,8 +1,6 @@
 import { prisma } from "../../../lib/prisma"
 import bcrypt from "bcrypt";
-
 import { NextRequest, NextResponse } from "next/server";
-
 export async function POST(req: NextRequest, res: NextResponse) {
   const { email, password, username } = await req.json() as { username: string, email: string, password: string }
   if (!email || !password || !username) return NextResponse.json({ message: "harap is semua input" }, { status: 400 })

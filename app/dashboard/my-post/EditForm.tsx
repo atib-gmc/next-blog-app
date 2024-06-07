@@ -1,7 +1,7 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { z, } from "zod"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -13,74 +13,81 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
-import { createPost } from "./actions"
 import TextEditor from "@/components/ui/TextEditor"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/components/ui/use-toast"
+import { updatePost } from "./actions"
 import { ChangeEvent, useState } from "react"
 import { Badge } from "@/components/ui/badge"
-import { UploadButton } from "@/lib/utils"
 
 const FormSchema = z.object({
   title: z.string().min(3).max(200),
   body: z.string().min(6),
   excerpt: z.string().min(3).max(300),
-  is_published: z.boolean().default(false),
-  featured_image: z.any()
+  featured_image: z.string().optional(),
+  id: z.number().nullable()
 })
 
+type Tpost = {
+  id: number;
+  title: string;
+  content: string;
+  excerpt: string;
+  featured_image?: string;
+  authorId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 export type post = z.infer<typeof FormSchema>
-export default function Dashboard() {
+export default function EditForm(post: Tpost) {
+
   const [featuredImage, setFeaturedImage] = useState<FileList | undefined>(undefined)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      body: "",
-      title: "",
-      excerpt: "",
+      body: post.content || "",
+      title: post.title || "",
+      excerpt: post.excerpt || "",
+      id: post.id,
     }
   })
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    try {
-      if (!featuredImage) return
-      const formData = new FormData()
-      formData.append('file', featuredImage[0])
-      formData.append("upload_preset", "jmm5aqtp")
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-        method: "POST",
-        body: formData
-      })
-      const image = await response.json()
-      await createPost({ ...data, featured_image: image.url })
-      toast({
-        title: "Post created",
-        description: "Post created successfully"
-      })
-      form.reset()
-      setFeaturedImage(undefined)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
+
   const imageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFeaturedImage(e.target.files);
     }
   };
-
+  // console.log(form.formState.isValidating)
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    // await createPost(data)
+    console.log(data)
+    return
+    const res = await updatePost(data)
+    // console.log(res)
+    toast({
+      title: "Post edited",
+      description: "post edited successfully"
+    })
+    post.setOpenDialog(false)
+    form.reset()
+  }
+  console.log(form.formState.errors)
   return (
     <Form {...form} >
       <label htmlFor="featured_image">
         <p className="my-2 text-sm">featured image(optional)</p>
         <Input type="file" onChange={imageChange} />
       </label>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="md:max-w-xl w-full border  mt-10  shadow-md p-5 rounded-md  bg-background  h-full overflow-hidden  mx-auto space-y-3">
-        {featuredImage && <div className="relative">
-          <img src={URL.createObjectURL(featuredImage[0])} />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="md:max-w-xl w-full shadow-md  rounded-md bg-background  h-full mx-auto space-y-3 ">
+        {featuredImage ? <div className="relative">
+          <img src={featuredImage ? URL.createObjectURL(featuredImage[0]) : post.featured_image} />
           <Badge onClick={() => setFeaturedImage(undefined)} className="absolute cursor-pointer  -top-2 w-8 h-8 bg-red-500 flex justify-center items-center hover:bg-red-600 -right-2">
             <span>x</span>
           </Badge>
+        </div> : <div className="relative"> <img src={post.featured_image} />
         </div>}
         <FormField
           control={form.control}
@@ -123,9 +130,8 @@ export default function Dashboard() {
             <FormItem>
               <FormLabel>Content</FormLabel>
               <FormControl>
-                {/* <Textarea {...field} placeholder="content" className="min-h-32" /> */}
                 <div className="wrapper">
-                  <TextEditor name="body" reset={form.formState.isSubmitSuccessful} onChange={field.onChange} description={field.value} />
+                  <TextEditor reset={form.formState.isSubmitSuccessful} name="body" onChange={field.onChange} description={field.value} />
                 </div>
               </FormControl>
               <FormDescription>
@@ -135,12 +141,8 @@ export default function Dashboard() {
             </FormItem>
           )}
         />
-        {/* <Button type="submit">Submit</Button> */}
-        {/* <p className="text-red-400 text-sm"></p> */}
-        {/* <LoginBtn /> */}
         <Button disabled={form.formState.isSubmitting} variant={"default"} >{form.formState.isSubmitting ? "submiting..." : "submit"}</Button>
-
       </form>
-    </Form>
+    </Form >
   )
 }

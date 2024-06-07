@@ -1,4 +1,3 @@
-"use client"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -8,30 +7,30 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { CommandMenu } from "./CommandMenu";
 
 export default function Resizeable({ children }: { children: ReactNode }) {
-  const [windowSize, setWindowSize] = useState(getWindowSize());
-
-  async function getWindowSize() {
-    const { innerWidth, innerHeight } = window && window;
-    return { innerWidth, innerHeight };
-  }
-  useEffect(() => {
-    function handleWindowResize() {
-      setWindowSize(getWindowSize());
-    }
-
-    // Add an event listener for window resize
-    window.addEventListener('resize', handleWindowResize);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('resize', handleWindowResize);
-    };
-  }, []);
+  // const [windowSize, setWindowSize] = useState(getWindowSize());
+  //
+  // async function getWindowSize() {
+  //   const { innerWidth, innerHeight } = window && window;
+  //   return { innerWidth, innerHeight };
+  // }
+  // useEffect(() => {
+  //   function handleWindowResize() {
+  //     setWindowSize(getWindowSize());
+  //   }
+  //
+  //   // Add an event listener for window resize
+  //   window.addEventListener('resize', handleWindowResize);
+  //
+  //   // Clean up the event listener when the component unmounts
+  //   return () => {
+  //     window.removeEventListener('resize', handleWindowResize);
+  //   };
+  // }, []);
 
   return (
     <>
       <ResizablePanelGroup
-        direction={`${innerWidth > 490 ? "horizontal" : "vertical"}`}
+        direction="horizontal"
         className="min-h-screen h-full   rounded-lg border w-full "
       >
         <ResizablePanel defaultSize={10} minSize={5} maxSize={10}>

@@ -16,8 +16,6 @@ import {
   NavigationMenuTrigger,
   // navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-
-
 export function Menu() {
   return (
     <NavigationMenu className="ml-auto space-y-2">

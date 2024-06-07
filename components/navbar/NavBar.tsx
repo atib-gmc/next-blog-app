@@ -3,7 +3,6 @@ import { Menu } from './menu'
 import { Profile } from './Profile'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { Separator } from '../ui/separator'
 
 export default function NavBar() {
   return (
@@ -16,7 +15,7 @@ export default function NavBar() {
             </div>
           </Link>
         </Button>
-        <Menu />
+        {/* <Menu /> */}
         <Profile />
       </div>
     </>

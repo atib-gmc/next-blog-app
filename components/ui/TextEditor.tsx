@@ -7,7 +7,7 @@ import Placeholder from "@tiptap/extension-placeholder"
 import ToolBar from './ToolBar'
 import { Separator } from './separator'
 
-export default function TextEditor({ reset, onChange, description }: { onChange: (text: string) => void, description: string, reset: boolean }) {
+export default function TextEditor({ name, reset, onChange, description }: { onChange: (text: string) => void, description: string, reset: boolean, name: string }) {
 
   const editor = useEditor({
     extensions: [
@@ -23,6 +23,7 @@ export default function TextEditor({ reset, onChange, description }: { onChange:
     editorProps: {
       attributes: {
         class: "prose mt-2 no-scrollbar overflow-y-scroll h-[13rem] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        name
       },
     },
     onUpdate({ editor }) {

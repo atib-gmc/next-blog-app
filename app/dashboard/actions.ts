@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth";
 import { authOption } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { log } from "console";
-import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 export async function createPost(form: post) {
   const user = await getServerSession(authOption);
@@ -16,14 +15,22 @@ export async function createPost(form: post) {
         title: form.title,
         content: form.body,
         authorId: Number(user.user.id),
-        excerpt: form.excerpt
+        excerpt: form.excerpt,
+        featured_image: form.featured_image
       },
     });
-    revalidatePath("/", "layout")
-    NextResponse.json({ message: "post successfuly" }, { status: 200 })
-    redirect("/")
+    revalidatePath("/dashboard/my-post")
+    return {
+      error: null,
+      message: "Post created successfully",
+    }
   } catch (error) {
-    NextResponse.json({ message: "something went wrong" }, { status: 500 })
     log(error)
+    return {
+      error: {
+        err: JSON.stringify(error)
+      },
+      message: "Failed submission",
+    }
   }
 }

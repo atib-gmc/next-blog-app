@@ -1,4 +1,15 @@
 import React from 'react'
+// export type Post = {
+//   id: string;
+//   title: string;
+//   excerpt: string;
+//   createdAt: string;
+//   author: {
+//     name: string;
+//     email: string;
+//     id: string;
+//   };
+// }
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
