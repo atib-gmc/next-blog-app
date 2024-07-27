@@ -13,14 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
 import { createPost } from "./actions"
 import TextEditor from "@/components/ui/TextEditor"
-import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/components/ui/use-toast"
 import { ChangeEvent, useState } from "react"
 import { Badge } from "@/components/ui/badge"
-import { UploadButton } from "@/lib/utils"
 
 const FormSchema = z.object({
   title: z.string().min(3).max(200),
@@ -43,22 +40,31 @@ export default function Dashboard() {
   })
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      if (!featuredImage) return
-      const formData = new FormData()
-      formData.append('file', featuredImage[0])
-      formData.append("upload_preset", "jmm5aqtp")
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-        method: "POST",
-        body: formData
-      })
-      const image = await response.json()
-      await createPost({ ...data, featured_image: image.url })
-      toast({
-        title: "Post created",
-        description: "Post created successfully"
-      })
-      form.reset()
-      setFeaturedImage(undefined)
+      if (featuredImage) {
+        const formData = new FormData()
+        formData.append('file', featuredImage[0])
+        formData.append("upload_preset", "jmm5aqtp")
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData
+        })
+        const image = await response.json()
+        await createPost({ ...data, featured_image: image.url })
+        toast({
+          title: "Post created",
+          description: "Post created successfully"
+        })
+        form.reset()
+        setFeaturedImage(undefined)
+      }
+      else {
+        await createPost({ ...data })
+        toast({
+          title: "Post created",
+          description: "Post created successfully"
+        })
+        form.reset()
+      }
     } catch (error) {
       console.log(error)
     }

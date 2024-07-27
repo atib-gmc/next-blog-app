@@ -10,7 +10,7 @@ export default function PostCard(post) {
         <CardDescription>{post.content}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p>{post.author ? post.author.name : "No Author"}</p>
+        {/* <p>{post.author ? post.author.name : "No Author"}</p> */}
       </CardContent>
       <CardFooter>
         {/* <p>{post.author ? post.author.email : "No Email"}</p> */}

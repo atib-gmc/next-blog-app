@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import PostCardContainer from "./components/PostCardContainer";
+
 export default async function Home() {
   return (
     <div className="min-h-screen   mx-auto dark w-full">

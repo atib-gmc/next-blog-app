@@ -31,6 +31,7 @@ export default async function page(props: { params: { id: string } }) {
   const { id } = props.params
   const data = await getData(id)
 
+
   return (
     <div className="container prose px-32 mt-10 tiptap mx-auto text-center  w-full mx-auto">
       <BreadcrumbWithCustomSeparator >
@@ -39,22 +40,24 @@ export default async function page(props: { params: { id: string } }) {
         </span>
       </BreadcrumbWithCustomSeparator>
       <div className="topbar">
-
         <Badge variant={"outline"}>{data?.createdAt.split(":")[0].slice(0, -3)}</Badge>
         <Badge variant={"outline"}>by : {data?.author.name}</Badge>
 
+        <p>{JSON.stringify(data)}</p>
         <h1>{data?.title}</h1>
         <figcaption className="mx-auto max-w-[60rem]  max-h-[6orem]">
 
-          <Suspense fallback={<ImageSkeleton />} >
-            <Image
-              src={data?.featured_image!}
-              className=" mx-auto max-h-[30rem] h-full border border-input shadow-xl dark:shadow-gray-500/10 rounded-md  my-5 h-full bg-cover w-full"
-              width={500}
-              height={500}
-              alt="Picture of the author"
-            />
-          </Suspense>
+          {data?.featured_image && (
+            <Suspense fallback={<ImageSkeleton />} >
+              <Image
+                src={data?.featured_image!}
+                className=" mx-auto max-h-[30rem] h-full border border-input shadow-xl dark:shadow-gray-500/10 rounded-md  my-5 h-full bg-cover w-full"
+                width={500}
+                height={500}
+                alt="Picture of the author"
+              />
+            </Suspense>
+          )}
         </figcaption>
       </div>
       <div className="max-w-[50rem] text-justify mx-auto  " dangerouslySetInnerHTML={{ __html: data?.content! }}>

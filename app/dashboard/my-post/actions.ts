@@ -16,7 +16,7 @@ export async function updatePost(data: post): Promise<Record<any, any>> {
 
   if (!data) return { error: null, message: `post not found` };
   try {
-    await prisma.post.update({ where: { id: Number(data.id) }, data: { title: data.title, content: data.body, excerpt: data.excerpt } })
+    await prisma.post.update({ where: { id: Number(data.id) }, data: { title: data.title, content: data.body, excerpt: data.excerpt, featured_image: data.featured_image } })
     revalidatePath("/dashboard/my-post")
     return { error: null, message: `post updated successfully` };
 

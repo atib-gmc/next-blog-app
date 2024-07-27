@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/use-toast"
 import { updatePost } from "./actions"
 import { ChangeEvent, useState } from "react"
 import { Badge } from "@/components/ui/badge"
+import { deleteImage } from "@/utils/utils"
 
 const FormSchema = z.object({
   title: z.string().min(3).max(200),
@@ -62,19 +63,49 @@ export default function EditForm(post: Tpost) {
   };
   // console.log(form.formState.isValidating)
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    // await createPost(data)
-    console.log(data)
-    return
-    const res = await updatePost(data)
-    // console.log(res)
-    toast({
-      title: "Post edited",
-      description: "post edited successfully"
-    })
-    post.setOpenDialog(false)
-    form.reset()
+    // console.log(data, post.featured_image)
+    // return console.log(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME)
+    try {
+      if (featuredImage) {
+        if (post.featured_image) {
+          await deleteImage(post.featured_image)
+          console.log("deleted")
+        }
+        const formData = new FormData()
+        formData.append('file', featuredImage[0])
+        formData.append("upload_preset", "jmm5aqtp")
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData
+        })
+        if (response.ok) {
+          const image = await response.json()
+          console.log(image.url)
+          await updatePost({ ...data, featured_image: image.url })
+          toast({
+            title: "Post created",
+            description: "Post updated successfully"
+          })
+          form.reset()
+          setFeaturedImage(undefined)
+          post.setOpenDialog(false)
+        }
+      }
+      else {
+        await updatePost({ ...data })
+        toast({
+          title: "Post created",
+          description: "Post updated successfully"
+        })
+        form.reset()
+        post.setOpenDialog(false)
+      }
+
+    } catch (error) {
+
+    }
   }
-  console.log(form.formState.errors)
+
   return (
     <Form {...form} >
       <label htmlFor="featured_image">
