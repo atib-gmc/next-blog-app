@@ -1,63 +1,65 @@
 import bcrypt from "bcrypt";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-export const authOption: NextAuthOptions = {
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
       name: "credentials",
-      type: "credentials",
       id: "credentials",
       credentials: {
-        email: {
-          label: "email",
-          placeholder: "email",
-          type: "email",
-        },
-        password: {
-          type: "password",
-          label: "password",
-          placeholder: "password",
-        },
+        email: { label: "Email", type: "email", placeholder: "email@example.com" },
+        password: { label: "Password", type: "password" }
       },
       //@ts-ignore
-      async authorize(credentials, req) {
-        // console.log("cred", credentials, "req", req);
-        //check user in db
-        const user = await prisma?.user.findUnique({
+      async authorize(credentials, _req) {
+        const user = await prisma.user.findUnique({
           where: { email: credentials?.email },
         });
-        if (!user) throw new Error("user not found");
-        //check password
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
         const checkPassword = await bcrypt.compare(
           credentials?.password!,
-          user?.password
+          user.password
         );
-        if (!checkPassword) throw new Error("password incorrect");
+
+        if (!checkPassword) {
+          throw new Error("Password is incorrect");
+        }
+
         return {
           email: user.email,
           id: user.id,
           name: user.name,
         };
-      },
-    }),
+      }
+    })
   ],
   callbacks: {
-    jwt(params) {
-      return params.token;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       //@ts-ignore
-      const newSesion = {
-        ...session,
-        user: { ...session.user, id: token.sub },
-      };
-      return newSesion;
-    },
+      session.user.id = token.id;
+      return session;
+    }
   },
   pages: {
     signIn: "/login",
-    error: "/login",
-  },
+    error: "/login"
+  }
 };
-const handler = NextAuth(authOption);
+
+const handler = NextAuth(authOptions);
+
 export { handler as GET, handler as POST };
