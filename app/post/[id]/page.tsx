@@ -3,6 +3,7 @@ import { FacebookShareButton, FacebookIcon } from "react-share"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import { ShareFacebook, ShareTwitter } from "./share"
+import { prisma } from "@/lib/prisma"
 import { Suspense } from "react"
 import ImageSkeleton from "@/components/ui/skeleton/ImageSkeleton"
 import { BreadcrumbWithCustomSeparator } from "./Breadcrumb"
@@ -29,7 +30,9 @@ type Post = {
 };
 export default async function page(props: { params: { id: string } }) {
   const { id } = props.params
-  const data = await getData(id)
+  // const data = await getData(id)
+  const data = await prisma?.post.findUnique({ where: { id: Number(id) } })
+  // return console.log(data)
 
 
   return (
@@ -40,10 +43,10 @@ export default async function page(props: { params: { id: string } }) {
         </span>
       </BreadcrumbWithCustomSeparator>
       <div className="topbar">
-        <Badge variant={"outline"}>{data?.createdAt.split(":")[0].slice(0, -3)}</Badge>
-        <Badge variant={"outline"}>by : {data?.author.name}</Badge>
+        <Badge variant={"outline"}>{(data?.createdAt.toLocaleString())}</Badge>
+        {/* <Badge variant={"outline"}>by : {data?.author?.name}</Badge> */}
 
-        <p>{JSON.stringify(data)}</p>
+        {/* <p>{JSON.stringify(data)}</p> */}
         <h1>{data?.title}</h1>
         <figcaption className="mx-auto max-w-[60rem]  max-h-[6orem]">
 
