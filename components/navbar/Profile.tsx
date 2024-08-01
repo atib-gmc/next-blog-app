@@ -28,6 +28,7 @@ export async function Profile() {
   const session = await getServerSession() as DefaultSession
   return (
     <DropdownMenu>
+      <h1>hello world</h1>
       <DropdownMenuTrigger className="cursor-pointer" asChild>
         <Button variant={"ghost"} className="w-auto h-auto rounded-full p-1">
           <TooltipProvider>
