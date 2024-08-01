@@ -20,7 +20,6 @@ type post = {
   title: string;
   content: string;
   excerpt: string;
-  isPublished: boolean;
   authorId: number;
   createdAt: Date;
   updatedAt: Date;

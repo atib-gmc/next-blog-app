@@ -11,7 +11,6 @@ export default async function page() {
   const posts = await prisma.post.findMany({ where: { authorId: { equals: session.user.id } } })
   return (
     <div className="container">
-
       <DataTable data={posts} columns={columns} />
     </div>
   )

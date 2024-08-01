@@ -2,12 +2,12 @@
 import { prisma } from "@/lib/prisma";
 import { post } from "./page";
 import { getServerSession } from "next-auth";
-import { authOption } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { log } from "console";
 import { revalidatePath } from "next/cache";
+import authOptions from "@/lib/auth";
 export async function createPost(form: post) {
-  const user = await getServerSession(authOption);
+  const user = await getServerSession(authOptions);
   if (!user) return redirect("/login");
   try {
     await prisma.post.create({
